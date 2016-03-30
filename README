@@ -1,0 +1,73 @@
+Notes for "Media_Streams_Class" and "Media_Server"
+
+This is a class to develop a simple broadcasting system based on open source
+multimedia framework Gstreamer. Media_Server.py is a simple interface to test
+"Media_Streams_Class". It supports video streaming from live, .mp4 and .AVI files.
+
+Media_Streams_Class makes a connection to a RTSP sender and reads the data.
+Media_Streams_Class strictly follows RFC 2326 and therefore does not (yet)
+support RealMedia/Quicktime/Microsoft extensions.
+Media_Streams_Class supports transport over TCP or UDP in unicast or multicast mode.
+By default Media_Streams_Class will negotiate a connection in the following order:
+UDP unicast/UDP multicast/TCP.
+The order cannot be changed but the allowed protocols can be controlled with the
+“protocols” property.
+
+Media_Streams_Class currently understands SDP as the format of the session description.
+For each stream listed in the SDP a new rtp_stream%d pad will be created with caps
+derived from the SDP media description.
+
+Media_Streams_Class acts like a live source and will therefore only generate data
+in the PLAYING state.
+
+==== Requirements ====
+
+* The latest version, which is 1.6.0, of Gstreamer "1.0"
+* For graphical user interface: 'Gtk' version 3.0, 'GdkX11' version 3.0 and
+  'GstVideo' version 1.0
+* ctypes library for XInitThreads() multithread support
+* GObject library to provide in Python, object-oriented C-based APIs
+* This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation.
+
+==== Testing ====
+
+On the sending side:
+
+    You use VLC to send your stream to "Media_Streams_Class"
+    Video streaming from VLC:
+
+        cvlc v4l2:///dev/video0 :input-slave=alsa://hw:0,0
+        :v4l2-brightness=10 :v4l2-audio-volume=200 :file-caching=300
+        :sout='#transcode{vcodec=h264,width=320,height=240,fps=25,
+        vb=3000,scale=0.5,acodec=aac,ab=128,channels=2,samplerate=44100,deinterlace}
+        :rtp{mux=ts,port=8554,sdp=rtsp://127.0.0.1:8554/stream}'
+        :no-sout-rtp-sap :no-sout-standard-sap :ttl=1 :sout-keep
+
+
+On the receiving side:
+
+    Run "Media_Server.py"
+
+        Insert a valid URI path for your stream (rtsp://ip_address:port_number/name_of_stream)
+        Click on "Add stream"
+        You are receiving your stream and a button with "CAM n°" will appear on the interface
+        The first time two videos will appear on the screen (added camera and ON AIR video)
+        You can add as many streams (cameras) you want and you can choose your ON AIR camera
+
+==== Downloads ====
+
+You can find source releases in the download
+directory: http://gstreamer.freedesktop.org/src
+
+==== Support and Bugs ====
+
+For help and support, please send me questions
+
+==== Developers ====
+
+Contributors to this release
+
+      * Giacomo Difruscolo
+
